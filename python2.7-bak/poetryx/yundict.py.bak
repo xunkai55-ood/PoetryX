@@ -1,4 +1,4 @@
-
+from __future__ import division
 
 __author__ = "zxk"
 
@@ -12,14 +12,14 @@ class YunDict(object):
         self.dict = mongo.yd_ci_lin    
 
     def query_char(self, c):
-        rst = self.dict.find_one({"字": c})["韵列表"]
+        rst = self.dict.find_one({u"字": c})[u"韵列表"]
         
         # append other information
         for each in rst:
-            if each["声"] in list("上去入"):
-                each["平仄"] = "仄"
+            if each[u"声"] in list(u"上去入"):
+                each[u"平仄"] = u"仄"
             else:
-                each["平仄"] = "平"
+                each[u"平仄"] = u"平"
 
         return rst
 
@@ -29,14 +29,17 @@ class YunDict(object):
         cys: char's yuns distribution
         '''
         rst = {}
-        targets = ["韵", "部", "声", "平仄"]
+        targets = [u"韵", u"部", u"声", "平仄"]
         for each in targets:
-            rst[each] = {}
-            for y, p in cysd:
-                if y[each] in rst[each]:
-                    rst[each][y[each]] += p
-                else:
-                    rst[each][y[each]] = p
+            rst[each] = []
+            cands = [y[each] for y, p in cysd]
+            cands = list(set(cands))
+            for cand in cands:
+                pc = 0
+                for y, p in cysd:
+                    if y[each] == cand:
+                        pc += p
+                rst[each].append((cand, pc))
         return rst
 
     def process(self, sentence, raw = False):
@@ -52,10 +55,10 @@ class YunDict(object):
         rst = []
         for c in sentence:
             q = self.query_char(c)
-            rst.append(list(zip(q, [1 / len(q)] * len(q))))
+            rst.append(zip(q, [1 / len(q)] * len(q)))
         if raw:
             return rst
         else:
-            return list(map(self.reorganize, rst))
+            return map(self.reorganize, rst)
 
         

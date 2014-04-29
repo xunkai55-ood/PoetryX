@@ -2,8 +2,8 @@
 
 __author__ = "zxk"
 
-from .config import default_config as config
-from . import utils
+from config import default_config as config
+import utils
 
 import os
 import codecs
@@ -13,10 +13,10 @@ import re
 from pymongo import MongoClient
 mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
 
-from . import tag_ci_pai
-from . import poetry_char_count
-from . import ci_lin_extractor
-from . import alias2mongo
+import tag_ci_pai
+import poetry_char_count
+import ci_lin_extractor
+import alias2mongo
 
 def fix(half):
     rec = re.compile(r"&#[0-9]{1,10};")
@@ -87,8 +87,7 @@ def main(f):
             subject = get_inner(line)
         elif line.find("</Poem>") >= 0:
             cnt += 1
-            if cnt >= start:
-                db_write(cnt, dynasty, author, subject, poem, rp)
+            db_write(cnt, dynasty, author, subject, poem, rp)
             poem = ""
             rp = ""
             pass

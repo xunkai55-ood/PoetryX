@@ -6,7 +6,7 @@ Need advanced evaluation in future.
 
 __author__ = "zxk"
 
-from .config import default_config as config
+from config import default_config as config
 
 import os
 import codecs

@@ -6,8 +6,8 @@ A terminal intereactive script to check all ci in db.
 
 __author__ = "zxk"
 
-from .config import default_config as config
-from . import utils
+from config import default_config as config
+import utils
 
 import os
 import codecs
@@ -36,8 +36,7 @@ def is_suspect(p):
     '''
 
     # Step.2 just like an poetry
-    # TBD
-    pass
+    
 
 def run():
     for each in get_plist():

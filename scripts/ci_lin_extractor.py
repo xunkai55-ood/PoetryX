@@ -12,7 +12,7 @@ import codecs
 f = codecs.open("stash/ci_lin_zheng_yun.txt", "r", "utf-8")
 
 from pymongo import MongoClient
-from .config import default_config as config
+from config import default_config as config
 
 mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
 
@@ -54,7 +54,6 @@ def run():
                 print(line)
                 print(bu)
                 sheng = input()
-                sheng = sheng.decode("utf-8")
                 for u in range(len(line)):
                     if not (line[u] in cnn):
                         yun = line[ : u + 1]
@@ -69,14 +68,13 @@ def run():
                 elif ling == 0:
                     add_to_yd(each, yun, bu, sheng)
 
-    input("continue?")
-
     for each in yd:
         t = {}
         t['字'] = each
         t['韵列表'] = yd[each]
         mongo.yd_ci_lin.insert(t)
 
-
+if __name__ == "__main__":
+    run()
 
 

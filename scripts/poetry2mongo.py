@@ -3,7 +3,7 @@ Store poetry records from text-based system to mongo.
 '''
 
 __author__ = "zxk"
-from .config import default_config as config
+from config import default_config as config
 
 import os
 import codecs

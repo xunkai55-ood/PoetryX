@@ -8,7 +8,7 @@ __author__ = "zxk"
 
 import codecs
 from pymongo import MongoClient
-from .config import default_config as config
+from config import default_config as config
 
 mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
 
@@ -21,7 +21,7 @@ def run():
     cpnset = set(cpnlist)
 
     for each in plist:
-        sub = each["subject"]
+        sub = each["题目"]
         for i in reversed(list(range(len(sub)))):
             if sub[ : i + 1] in cpnset:
                 mongo.poetry.update(

@@ -2,7 +2,7 @@
 
 __author__ = "zxk"
 
-from .config import default_config as config
+from config import default_config as config
 
 import os
 import codecs

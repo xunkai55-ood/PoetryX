@@ -4,8 +4,8 @@ This script checks if there exists invalid charachaters.
 
 __author__ = 'zxk'
 
-from .config import default_config as config
-from . import utils
+from config import default_config as config
+import utils
 
 import os
 import codecs

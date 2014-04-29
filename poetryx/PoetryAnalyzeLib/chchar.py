@@ -1,5 +1,3 @@
-#-*- coding: utf-8 -*- 
-
 brk_1 = list('.。?？！!；;：:')
 brk_2 = list(',，、')
 brk = brk_1 + brk_2
@@ -24,4 +22,3 @@ ignorables = list("<《(（）)》>『』「」")
 
 def is_ignorable(c):
     return c in ignorables
-

@@ -25,3 +25,10 @@ ignorables = list("<《(（）)》>『』「」")
 def is_ignorable(c):
     return c in ignorables
 
+def break_poetry(p):
+    t = [p]
+    for each in brk:
+        r = []
+        for item in t:
+            r.extend(item.split(each))
+        t = r
