@@ -1,0 +1,34 @@
+# -*-coding: utf-8 -*-
+
+'''
+Tag ci pai for all poetry
+'''
+
+__author__ = "zxk"
+
+import codecs
+from pymongo import MongoClient
+from config import default_config as config
+
+mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
+
+def run():
+    plist = mongo.poetry.find()
+
+    cpnlist = []
+    for each in mongo.ci_pai_alias.find():
+        cpnlist.append(each[u"词牌名"])
+    cpnset = set(cpnlist)
+
+    for each in plist:
+        sub = each["subject"]
+        for i in reversed(range(len(sub))):
+            if sub[ : i + 1] in cpnset:
+                mongo.poetry.update(
+                    {"_id": each["_id"]},
+                    {"$set": {u"词牌名": sub[ : i + 1], u"词": 1}}
+                )
+                print sub[ : i + 1]
+
+if __name__ == "__main__":
+    run()

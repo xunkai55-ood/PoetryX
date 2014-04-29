@@ -1,0 +1,27 @@
+'''
+Store poetry records from text-based system to mongo.
+'''
+
+__author__ = "zxk"
+from .config import default_config as config
+
+import os
+import codecs
+import json
+
+from pymongo import MongoClient
+mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
+
+def text2mongo(fn, sid):
+
+    f = codecs.open(fn, "r", "utf-8")
+    t = json.load(f)
+    t["version"] = "sou-yun"
+    t["souyun_id"] = sid
+    mongo.poetry.insert(t)
+
+def run():
+    path = input("Input the text pool path here > ")
+    fns = os.listdir(path)
+    for each in fns:
+        text2mongo(os.path.join(path, each), each[:each.find("_")])

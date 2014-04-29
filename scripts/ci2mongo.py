@@ -1,0 +1,25 @@
+'''
+Tag "ci" for each poetry.
+However, the method is naive; Thus, a few tagged "ci" is not a ci.
+Need advanced evaluation in future.
+'''
+
+__author__ = "zxk"
+
+from .config import default_config as config
+
+import os
+import codecs
+import json
+
+from pymongo import MongoClient
+mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
+
+def tag_ci(fn, sid):
+    mongo.poetry.update({"souyun_id": sid}, {"$set": {"ci": 1}})
+
+def run():
+    path = input("Input the ci pool path here > ")
+    fns = os.listdir(path)
+    for each in fns:
+        tag_ci(os.path.join(path, each), each[:each.find("_")])

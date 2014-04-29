@@ -1,0 +1,27 @@
+# -*-coding: utf-8 -*-
+
+'''
+Tag "char_cnt" for each poetry.
+2014.4.8
+'''
+
+__author__ = "zxk"
+
+from config import default_config as config
+import utils
+
+import os
+import codecs
+import json
+
+from pymongo import MongoClient
+mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
+
+def run():
+    lst = mongo.poetry.find()
+    for each in lst:
+        count = 0
+        for c in each[u"内容"]:
+            if utils.is_ch(c):
+                count += 1
+        mongo.poetry.update({"_id": each["_id"]}, {"$set": {u"字数": count}})

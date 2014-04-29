@@ -1,0 +1,3 @@
+from . import scripts
+
+scripts.yundict2mongo.run()

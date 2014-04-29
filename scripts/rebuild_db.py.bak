@@ -1,0 +1,121 @@
+# -*- coding: utf-8 -*-
+
+__author__ = "zxk"
+
+from config import default_config as config
+import utils
+
+import os
+import codecs
+import json
+import re
+
+from pymongo import MongoClient
+mongo = MongoClient(config.MONGO_HOST, config.MONGO_PORT).poetryx
+
+import tag_ci_pai
+import poetry_char_count
+import ci_lin_extractor
+import alias2mongo
+
+def fix(half):
+    rec = re.compile(r"&#[0-9]{1,10};")
+    rst = rec.findall(half)
+    if len(rst):
+        for each in rst:
+            num = int(each[2:-1])
+            half = half.replace(each, unichr(num))
+    return half
+
+def fix2(raw):
+    rec = re.compile(u"（.*?）", re.DOTALL)
+    half = rec.sub("", raw)
+    rec = re.compile(r"&#[0-9]{1,10};")
+    rst = rec.findall(half)
+    if len(rst):
+        for each in rst:
+            num = int(each[2:-1])
+            half = half.replace(each, unichr(num))
+    rst = u""
+    for each in half:
+        if each >= u'\U00002C00' or each == u'\u25a1':
+            rst += each
+    return rst
+
+def get_inner(line):
+    rec = re.compile(r"'.*?'", re.DOTALL)
+    try:
+        x = rec.findall(line)[0]
+    except:
+        return ""
+    else:
+        return x[1:-1]
+
+def db_write(syid, d, a, s, p, raw):
+    t = {
+        u"搜韵id": syid,
+        u"朝代": d,
+        u"作者名": a,
+        u"来源": "搜韵网",
+        u"题目": s,
+        u"内容": p,
+        "raw_data": raw
+    }
+    mongo.poetry.insert(t)
+def main(f):
+
+    dynasty = ""
+    author = ""
+    subject = ""
+    poem = ""
+    rp = ""
+    cnt = 0
+
+    for rline in f:
+        line = fix(rline)
+        if line.find(u"<Dynasties>") >= 0:
+            pass
+        elif line.find(u"<Dynasty name") >= 0:
+            dynasty = get_inner(line)
+        elif line.find(u"<Authors>") >= 0:
+            pass
+        elif line.find(u"<Author name") >= 0:
+            author = get_inner(line)
+        elif line.find(u"<Poems>") >= 0:
+            pass
+        elif line.find(u"<Poem subject") >= 0:
+            subject = get_inner(line)
+        elif line.find(u"</Poem>") >= 0:
+            cnt += 1
+            if cnt >= start:
+                db_write(cnt, dynasty, author, subject, poem, rp)
+            poem = u""
+            rp = u""
+            pass
+        elif line.find(u"</Poems>") >= 0:
+            pass
+        elif line.find(u"</Author>") >= 0:
+            pass
+        elif line.find(u"</Authors>") >= 0:
+            pass
+        elif line.find(u"</Dynasty>") >= 0:
+            pass
+        elif line.find(u"</Dynasties>") >= 0:
+            pass
+        else:
+            poem = poem + fix2(rline)
+            rp = rp + rline
+
+def rebuild_poetry():
+    fn = raw_input("Specify db.txt here > ")
+    f = codecs.open(fn, "r", "utf-8")
+    main(f)
+    f.close()
+    poetry_char_count.run()
+    tag_ci_pai.run()
+
+if "__main__" == __name__:
+    alias2mongo.run()
+    # ci_lin_extractor.run() 
+    # need to do that manually. Redirect input from log.
+    rebuild_poetry()
